@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>커뮤니티 - 게임 발견 플랫폼</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header><div class="container nav">
+<a class="brand" href="index.html"><div class="logo">🎮</div><div><div class="brand-title">게임 발견 플랫폼</div><div class="brand-sub">게이머 커뮤니티</div></div></a>
+<nav class="menu">
+<a href="index.html">홈</a><a href="category.html">카테고리</a><a href="index.html#popular">인기 게임</a><a class="active" href="community.html">커뮤니티</a>
+</nav>
+<div style="flex:1"></div><a class="btn primary" href="community-write.html">글쓰기</a>
+</div></header>
+
+<main class="container board-wrap">
+<div class="board-title-row">
+  <div><h1>게임 커뮤니티</h1><p>게임 추천, 공략, 할인 정보, 질문을 자유롭게 나눠보세요.</p></div>
+  <div class="board-toolbar"><a class="btn primary" href="community-write.html">✏️ 글쓰기</a></div>
+</div>
+
+<div class="board-search">
+  <select id="searchType"><option value="all">제목+내용</option><option value="title">제목</option><option value="author">작성자</option></select>
+  <input id="boardSearchInput" placeholder="게시글 검색">
+  <button class="btn" id="boardSearchBtn" type="button">검색</button>
+</div>
+
+<div class="board">
+  <div class="board-head">
+    <div class="board-cell">번호</div><div class="board-cell">제목</div><div class="board-cell">작성자</div>
+    <div class="board-cell">작성일</div><div class="board-cell">조회</div><div class="board-cell">추천</div>
+  </div>
+  <div id="boardRows"></div>
+</div>
+
+<div class="board-footer">
+  <div class="pagination"><button class="page-btn active">1</button></div>
+  <a class="btn primary" href="community-write.html">글쓰기</a>
+</div>
+
+<div class="community-note">
+현재 버전은 HTML 프로토타입이라 작성한 게시글과 댓글은 이 브라우저의 localStorage에 저장됩니다.
+실제 서비스로 운영할 때는 로그인, 신고, 삭제, 이미지 첨부, 서버 DB, 실시간 댓글 등을 백엔드와 연결하면 됩니다.
+</div>
+</main>
+
+<footer><div class="container footer-row"><div>🎮 게임 발견 플랫폼</div><div>게이머 정보 교환 게시판</div><div>자유로운 토론 · 할인 정보 · 공략</div></div></footer>
+<script src="community-data.js"></script>
+<script>
+let allPosts=loadCommunityPosts();
+const rows=document.getElementById("boardRows");
+
+function renderBoard(posts){
+  rows.innerHTML="";
+  posts.sort((a,b)=>(b.notice-a.notice)||(b.id-a.id)).forEach(p=>{
+    const row=document.createElement("div");
+    row.className="board-row"+(p.notice?" board-notice":"");
+    row.innerHTML=`
+      <div class="board-cell">${p.notice?"공지":p.id}</div>
+      <div class="board-cell board-title-cell">
+        ${p.notice?'<span class="notice-badge">공지</span>':""}
+        <a class="board-title-link" href="community-post.html?id=${p.id}">${p.title}</a>
+        ${p.comments&&p.comments.length?`<span class="comment-count">[${p.comments.length}]</span>`:""}
+      </div>
+      <div class="board-cell">${p.author}</div>
+      <div class="board-cell">${p.date}</div>
+      <div class="board-cell">${p.views||0}</div>
+      <div class="board-cell">${p.recs||0}</div>`;
+    rows.appendChild(row);
+  });
+}
+
+function searchBoard(){
+  const q=document.getElementById("boardSearchInput").value.trim().toLowerCase();
+  const type=document.getElementById("searchType").value;
+  if(!q){renderBoard(allPosts);return}
+  renderBoard(allPosts.filter(p=>{
+    if(type==="title")return p.title.toLowerCase().includes(q);
+    if(type==="author")return p.author.toLowerCase().includes(q);
+    return (p.title+" "+p.content).toLowerCase().includes(q);
+  }));
+}
+document.getElementById("boardSearchBtn").onclick=searchBoard;
+document.getElementById("boardSearchInput").addEventListener("keydown",e=>{if(e.key==="Enter")searchBoard()});
+renderBoard(allPosts);
+</script>
+</body></html>

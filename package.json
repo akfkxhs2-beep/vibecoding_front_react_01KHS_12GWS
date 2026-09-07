@@ -1,0 +1,17 @@
+{
+  "name": "game-discovery-platform",
+  "version": "0.9.0",
+  "private": true,
+  "description": "Local-first game discovery platform with optional server/API mode",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev": "node server/server.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "pg": "^8.16.3"
+  }
+}
